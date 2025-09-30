@@ -11,7 +11,9 @@ import com.polstat.perpustakaan.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class BorrowingServiceImpl implements BorrowingService {
@@ -61,6 +63,20 @@ public class BorrowingServiceImpl implements BorrowingService {
         }
 
         borrowing = borrowingRepository.save(borrowing);
+        return BorrowingMapper.mapToBorrowingDto(borrowing);
+    }
+
+    @Override
+    public List<BorrowingDto> getAllBorrowings() {
+        return borrowingRepository.findAll().stream()
+                .map(BorrowingMapper::mapToBorrowingDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public BorrowingDto getBorrowingById(Long id) {
+        Borrowing borrowing = borrowingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Borrowing record not found with id: " + id));
         return BorrowingMapper.mapToBorrowingDto(borrowing);
     }
 }

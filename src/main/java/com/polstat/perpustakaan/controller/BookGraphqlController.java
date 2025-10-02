@@ -11,15 +11,22 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class BookGraphqlController {
-    @Autowired
     private BookService bookService;
+
+    @Autowired
+    public BookGraphqlController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     @QueryMapping
     public List<BookDto> books() {
+
         return bookService.getBooks();
     }
+
     @QueryMapping
     public BookDto bookById(@Argument Long id) {
-        return bookService.getBooks(id);
+        return (BookDto) bookService.getBooks();
     }
     @MutationMapping
     public BookDto createBook(@Argument String title, @Argument String
@@ -33,15 +40,15 @@ public class BookGraphqlController {
     }
     @MutationMapping
     public BookDto updateBook(@Argument Long id, @Argument String title, @Argument String description, @Argument String author) {
-        BookDto bookDto = bookService.getBooks(id);
+        BookDto bookDto = bookService.getBookById(id);
         bookDto.setTitle(title);
         bookDto.setAuthor(author);
         bookDto.setDescription(description);
-        return bookService.updateBook(bookDto);
+        return bookService.updateBook(id, bookDto);
     }
     @MutationMapping
     public void deleteBook(@Argument Long id) {
-        BookDto bookDto = bookService.getBooks(id);
-        bookService.deleteBook(bookDto);
+        BookDto bookDto = (BookDto) bookService.getBooks();
+        bookService.deleteBook(id);
     }
 }

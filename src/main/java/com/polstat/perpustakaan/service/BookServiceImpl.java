@@ -52,7 +52,6 @@ public class BookServiceImpl implements BookService {
         bookRepository.deleteById(id);
     }
 
-    // implementasi method searchBooks
     @Override
     public List<BookDto> searchBooks(String keyword) {
         List<Book> books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword, keyword);

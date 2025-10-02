@@ -11,19 +11,25 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class BookGraphqlController {
+    private final BookService bookService;
+
     @Autowired
-    private BookService bookService;
+    public BookGraphqlController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
     @QueryMapping
     public List<BookDto> books() {
         return bookService.getBooks();
     }
+
     @QueryMapping
     public BookDto bookById(@Argument Long id) {
-        return bookService.getBooks(id);
+        return bookService.getBookById(id);
     }
+
     @MutationMapping
-    public BookDto createBook(@Argument String title, @Argument String
-            description, @Argument String author) {
+    public BookDto createBook(@Argument String title, @Argument String description, @Argument String author) {
         BookDto bookDto = BookDto.builder()
                 .title(title)
                 .description(description)
@@ -31,17 +37,22 @@ public class BookGraphqlController {
                 .build();
         return bookService.createBook(bookDto);
     }
+
     @MutationMapping
     public BookDto updateBook(@Argument Long id, @Argument String title, @Argument String description, @Argument String author) {
-        BookDto bookDto = bookService.getBooks(id);
-        bookDto.setTitle(title);
-        bookDto.setAuthor(author);
-        bookDto.setDescription(description);
-        return bookService.updateBook(bookDto);
+        BookDto bookDto = BookDto.builder()
+                .title(title)
+                .author(author)
+                .description(description)
+                .build();
+        return bookService.updateBook(id, bookDto);
     }
+
     @MutationMapping
-    public void deleteBook(@Argument Long id) {
-        BookDto bookDto = bookService.getBooks(id);
-        bookService.deleteBook(bookDto);
+    public BookDto deleteBook(@Argument Long id) {
+        BookDto bookToDelete = bookService.getBookById(id);
+
+        bookService.deleteBook(id);
+        return bookToDelete;
     }
 }

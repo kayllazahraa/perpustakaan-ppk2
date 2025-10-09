@@ -5,13 +5,27 @@ type Book {
     description: String
 }
 
+type Member {
+    id: ID
+    memberId: String
+    name: String
+    address: String
+    phone_number: String
+}
+
 type Query {
     books: [Book]
     bookById(id: ID): Book
+    members: [Member]
+    memberById(id: ID): Member
 }
 
 type Mutation {
     createBook(title: String!, description: String, author: String!): Book!
     updateBook(id: ID!, title: String!, description: String, author: String!): Book!
     deleteBook(id: ID!): Book
+
+    createMember(memberId: String!, name: String!, address: String, phoneNumber: String): Member!
+    updateMember(id: ID!, memberId: String!, name: String!, address: String, phoneNumber: String): Member!
+    deleteMember(id: ID!): Member
 }

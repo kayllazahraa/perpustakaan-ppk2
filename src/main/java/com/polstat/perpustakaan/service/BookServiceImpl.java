@@ -10,24 +10,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BookServiceImpl implements BookService{
+public class BookServiceImpl implements BookService {
     @Autowired
     private BookRepository bookRepository;
 
     @Override
-    public void createBook(BookDto bookDto) {
-        bookRepository.save(BookMapper.mapToBook(bookDto));
+    public BookDto createBook(BookDto bookDto) {
+        Book book = BookMapper.mapToBook(bookDto);
+        Book savedBook = bookRepository.save(book);
+        return BookMapper.mapToBookDto(savedBook);
     }
+
     @Override
     public List<BookDto> getBooks() {
         List<Book> books = bookRepository.findAll();
-        List<BookDto> bookDtos = books.stream()
-                .map((product) -> (BookMapper.mapToBookDto(product)))
-                .collect(Collectors.toList());
-        return bookDtos;
+        return books.stream().map(BookMapper::mapToBookDto).collect(Collectors.toList());
     }
 
-    // implementasi method searchBooks
+    @Override
+    public BookDto getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+        return BookMapper.mapToBookDto(book);
+    }
+
+    @Override
+    public BookDto updateBook(Long id, BookDto bookDto) {
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+        existingBook.setTitle(bookDto.getTitle());
+        existingBook.setAuthor(bookDto.getAuthor());
+        existingBook.setDescription(bookDto.getDescription());
+        Book updatedBook = bookRepository.save(existingBook);
+        return BookMapper.mapToBookDto(updatedBook);
+    }
+
+    @Override
+    public void deleteBook(Long id) {
+        bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+        bookRepository.deleteById(id);
+    }
+
     @Override
     public List<BookDto> searchBooks(String keyword) {
         List<Book> books = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword, keyword);

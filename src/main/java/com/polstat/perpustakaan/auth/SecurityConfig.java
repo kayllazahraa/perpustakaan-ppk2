@@ -49,7 +49,7 @@ public class SecurityConfig {
 
                 // atur izin endpoint
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/register", "/login", "/docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
 

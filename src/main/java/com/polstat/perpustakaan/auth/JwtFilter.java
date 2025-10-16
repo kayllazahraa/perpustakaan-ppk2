@@ -48,12 +48,15 @@ public class JwtFilter extends OncePerRequestFilter {
     }
     private void setAuthenticationContext(String token, HttpServletRequest request) {
         UserDetails userDetails = getUserDetails(token);
+
         UsernamePasswordAuthenticationToken authentication = new
-                UsernamePasswordAuthenticationToken(userDetails, null, null);
+                UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
         authentication.setDetails(
                 new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
     private UserDetails getUserDetails(String token) {
         String subject = jwtUtil.getSubject(token);
         return UserDto.builder().email(subject).build();
